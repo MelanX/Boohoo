@@ -1,7 +1,6 @@
 package de.melanx.boohoo;
 
 import de.melanx.boohoo.ghost.GhostRenderer;
-import de.melanx.boohoo.registration.EventBasedRegistration;
 import de.melanx.boohoo.registration.ModEntities;
 import io.github.noeppi_noeppi.libx.mod.registration.ModXRegistration;
 import io.github.noeppi_noeppi.libx.mod.registration.RegistrationBuilder;
@@ -29,7 +28,7 @@ public final class Boohoo extends ModXRegistration {
             }
         });
         instance = this;
-        MinecraftForge.EVENT_BUS.register(new EventBasedRegistration());
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 
     @Override

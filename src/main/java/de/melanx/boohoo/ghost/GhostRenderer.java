@@ -1,7 +1,7 @@
 package de.melanx.boohoo.ghost;
 
 import de.melanx.boohoo.Boohoo;
-import de.melanx.boohoo.registration.EventBasedRegistration;
+import de.melanx.boohoo.registration.ClientEventBasedRegistration;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -14,7 +14,7 @@ public class GhostRenderer extends MobRenderer<Ghost, GhostModel> {
     private static final ResourceLocation TEXTURE = Boohoo.getInstance().resource("textures/entity/ghost/ghost.png");
 
     public GhostRenderer(EntityRendererProvider.Context context) {
-        super(context, new GhostModel(context.bakeLayer(EventBasedRegistration.GHOST_LAYER)), 0);
+        super(context, new GhostModel(context.bakeLayer(ClientEventBasedRegistration.GHOST_LAYER)), 0);
         this.addLayer(new ItemInHandLayer<>(this));
     }
 

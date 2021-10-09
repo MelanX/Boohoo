@@ -1,5 +1,7 @@
 package de.melanx.boohoo.ghost;
 
+import de.melanx.boohoo.capability.GhostCapability;
+import de.melanx.boohoo.capability.IGhostStatus;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -45,7 +47,7 @@ public class Ghost extends Monster {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.FOLLOW_RANGE, 32.0)
-                .add(Attributes.ATTACK_DAMAGE, 3.0)
+                .add(Attributes.ATTACK_DAMAGE, 5.0)
                 .build();
     }
 
@@ -103,7 +105,7 @@ public class Ghost extends Monster {
                 boolean teleported = false;
                 int counter = 0;
                 while (!teleported && counter++ < 100) {
-                    teleported = this.teleport();
+                    teleported = this.teleportTowards(player);
                 }
 
             }
@@ -119,6 +121,7 @@ public class Ghost extends Monster {
                 }
                 this.setItemInHand(InteractionHand.MAIN_HAND, steal);
                 this.vanishCounter = 100;
+                player.getCapability(GhostCapability.INSTANCE).ifPresent(IGhostStatus::invalidate);
             }
         }
     }
@@ -153,6 +156,7 @@ public class Ghost extends Monster {
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     protected boolean teleport() {
         if (!this.level.isClientSide && this.isAlive()) {
             double x = this.getX() + (this.random.nextDouble() - 0.5) * 5;
@@ -169,6 +173,23 @@ public class Ghost extends Monster {
         }
 
         return false;
+    }
+
+    // [Vanilla copy]
+    protected boolean teleportTowards(@Nonnull Entity entity) {
+        Vec3 vec3 = new Vec3(this.getX() - entity.getX(), this.getY(0.5D) - entity.getEyeY(), this.getZ() - entity.getZ()).normalize();
+        double range = 16.0D;
+        double x = this.getX() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.x * range;
+        double y = this.getY() + (double) (this.random.nextInt(16) - 8) - vec3.y * range;
+        double z = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * range;
+
+        int counter = 0;
+        boolean teleported = false;
+        while (!teleported && counter++ < 100) {
+            teleported = this.randomTeleport(x, y, z, false);
+        }
+
+        return teleported;
     }
 
     @Nullable
@@ -193,7 +214,11 @@ public class Ghost extends Monster {
                 ghost.setDeltaMovement(ghost.getDeltaMovement().add(vec3.scale(this.speedModifier * 0.05 / length)));
                 LivingEntity target = ghost.getTarget();
                 if (this.isInWall(ghost)) {
-                    ghost.teleport();
+                    if (target != null) {
+                        ghost.teleportTowards(target);
+                    } else {
+                        ghost.teleport();
+                    }
                 } else if (length < ghost.getBoundingBox().getSize()) {
                     this.operation = Operation.WAIT;
                 } else if (target == null) {
