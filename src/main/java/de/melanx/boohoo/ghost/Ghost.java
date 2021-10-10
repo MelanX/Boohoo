@@ -2,12 +2,17 @@ package de.melanx.boohoo.ghost;
 
 import de.melanx.boohoo.capability.GhostCapability;
 import de.melanx.boohoo.capability.IGhostStatus;
+import de.melanx.boohoo.registration.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -22,9 +27,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -163,13 +166,7 @@ public class Ghost extends Monster {
             double y = this.getX() + (this.random.nextInt(20) - 10);
             double z = this.getZ() + (this.random.nextDouble() - 0.5) * 5;
 
-            int counter = 0;
-            boolean teleported = false;
-            while (!teleported && counter++ < 100) {
-                teleported = this.randomTeleport(x, y, z, false);
-            }
-
-            return teleported;
+            return this.teleport(x, y, z);
         }
 
         return false;
@@ -183,20 +180,53 @@ public class Ghost extends Monster {
         double y = this.getY() + (double) (this.random.nextInt(16) - 8) - vec3.y * range;
         double z = this.getZ() + (this.random.nextDouble() - 0.5D) * 8.0D - vec3.z * range;
 
+        return this.teleport(x, y, z);
+    }
+
+    private boolean teleport(double x, double y, double z) {
         int counter = 0;
         boolean teleported = false;
         while (!teleported && counter++ < 100) {
             teleported = this.randomTeleport(x, y, z, false);
         }
 
+        if (teleported) {
+            this.playSound(this.getTeleportSound(), this.getSoundVolume(), this.getVoicePitch());
+        }
+
         return teleported;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(@Nonnull DamageSource source) {
+        return ModSounds.ghostHurt;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.ghostDeath;
+    }
+
+    @Nonnull
+    @Override
+    protected SoundEvent getFallDamageSound(int height) {
+        return ModSounds.ghostHurt;
     }
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(@Nonnull ServerLevelAccessor level, @Nonnull DifficultyInstance difficulty, @Nonnull MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
-        this.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.DIAMOND));
-        return spawnData;
+    protected SoundEvent getAmbientSound() {
+        return ModSounds.ghostAmbient;
+    }
+
+    @Nonnull
+    protected SoundEvent getTeleportSound() {
+        return ModSounds.ghostTeleport;
+    }
+
+    @Override
+    public int getAmbientSoundInterval() {
+        return 160;
     }
 
     private class GhostMoveControl extends MoveControl {

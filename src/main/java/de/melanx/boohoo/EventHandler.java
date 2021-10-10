@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -20,28 +22,37 @@ import java.util.concurrent.atomic.AtomicReference;
 public class EventHandler {
 
     @SubscribeEvent
+    public void attachCapabilityToPlayer(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof Player) {
+            GhostCapability provider = new GhostCapability();
+            event.addCapability(Boohoo.getInstance().resource("ghosting"), provider);
+        }
+    }
+
+    @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
         if (event.phase == TickEvent.Phase.END
                 && player.level instanceof ServerLevel level
+                && ((ServerPlayer) player).gameMode.getGameModeForPlayer() == GameType.SURVIVAL
                 && level.getDifficulty() != Difficulty.PEACEFUL
-                && level.isNight()) {
-            if (level.getDayTime() % 20 == 0 && player.getRandom().nextDouble() < 0.01) {
-                player.getCapability(GhostCapability.INSTANCE).ifPresent(cap -> {
-                    if (!cap.isGhosted()) {
-                        Ghost ghost = ModEntities.ghost.create(level);
-                        if (ghost == null) {
-                            return;
-                        }
-
-                        ghost.setTarget(player);
-                        ghost.setPos(player.getPosition(1).add(0, 2, 0));
-                        cap.setGhosted(true);
-                        cap.setGhostId(ghost.getUUID());
-                        level.addFreshEntity(ghost);
+                && level.isNight()
+                && level.getDayTime() % 20 == 0
+                && player.getRandom().nextDouble() < 0.01) {
+            player.getCapability(GhostCapability.INSTANCE).ifPresent(cap -> {
+                if (!cap.isGhosted()) {
+                    Ghost ghost = ModEntities.ghost.create(level);
+                    if (ghost == null) {
+                        return;
                     }
-                });
-            }
+
+                    ghost.setTarget(player);
+                    ghost.setPos(player.getPosition(1).add(0, 2, 0));
+                    cap.setGhosted(true);
+                    cap.setGhostId(ghost.getUUID());
+                    level.addFreshEntity(ghost);
+                }
+            });
         }
     }
 
