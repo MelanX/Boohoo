@@ -1,4 +1,8 @@
 {
   "item.boohoo.ghost_spawn_egg": "Ghost Spawn Egg",
-  "entity.boohoo.ghost": "Ghost"
+  "entity.boohoo.ghost": "Ghost",
+  "subtitle.boohoo.ghost.hurt": "Ghost hurts",
+  "subtitle.boohoo.ghost.ambient": "Ghost laughs",
+  "subtitle.boohoo.ghost.teleport": "Ghost teleports",
+  "subtitle.boohoo.ghost.death": "Ghost dies"
 }
