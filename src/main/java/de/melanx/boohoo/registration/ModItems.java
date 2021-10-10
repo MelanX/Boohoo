@@ -8,5 +8,5 @@ import net.minecraftforge.common.ForgeSpawnEggItem;
 @RegisterClass
 public class ModItems {
 
-    public static final Item ghostSpawnEgg = new ForgeSpawnEggItem(() -> ModEntities.ghost, 0x000000, 0xFFFFFF, new Item.Properties().tab(CreativeModeTab.TAB_MISC));
+    public static final Item ghostSpawnEgg = new ForgeSpawnEggItem(() -> ModEntities.ghost, 0xe5f9fe, 0xeff5f4, new Item.Properties().tab(CreativeModeTab.TAB_MISC));
 }
