@@ -13,4 +13,7 @@ public class ModConfig {
     @Config("Duration in ticks the ghost will stay in the world after the player died.")
     @IntRange(max = Integer.MAX_VALUE - 1)
     public static int vanishCounter = 1200;
+
+    @Config("Should the ghost disappear when turning into day?")
+    public static boolean disappearAtDay = true;
 }

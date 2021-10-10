@@ -80,14 +80,13 @@ public class Ghost extends Monster {
         this.noPhysics = false;
         this.setNoGravity(true);
 
+        if (ModConfig.disappearAtDay && this.level.isDay() && this.vanishCounter != Integer.MAX_VALUE) {
+            this.vanishCounter = ModConfig.vanishCounter;
+        }
+
         // drop inventory and remove ghost from world
         if (this.vanishCounter <= 0) {
-            this.getAllSlots().forEach(stack -> {
-                if (!stack.isEmpty()) {
-                    this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), stack));
-                }
-            });
-            this.remove(RemovalReason.DISCARDED);
+            this.disappear();
         }
 
         // count downwards
@@ -227,6 +226,15 @@ public class Ghost extends Monster {
         }
 
         return teleported;
+    }
+
+    private void disappear() {
+        this.getAllSlots().forEach(stack -> {
+            if (!stack.isEmpty()) {
+                this.level.addFreshEntity(new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), stack));
+            }
+        });
+        this.remove(RemovalReason.DISCARDED);
     }
 
     @Override
