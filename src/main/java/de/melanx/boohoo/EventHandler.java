@@ -38,7 +38,7 @@ public class EventHandler {
                 && level.getDifficulty() != Difficulty.PEACEFUL
                 && level.isNight()
                 && level.getDayTime() % 20 == 0
-                && player.getRandom().nextDouble() < 0.01) {
+                && player.getRandom().nextDouble() < ModConfig.spawnChance) {
             player.getCapability(GhostCapability.INSTANCE).ifPresent(cap -> {
                 if (!cap.isGhosted()) {
                     Ghost ghost = ModEntities.ghost.create(level);

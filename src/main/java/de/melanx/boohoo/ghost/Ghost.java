@@ -1,5 +1,6 @@
 package de.melanx.boohoo.ghost;
 
+import de.melanx.boohoo.ModConfig;
 import de.melanx.boohoo.capability.GhostCapability;
 import de.melanx.boohoo.capability.IGhostStatus;
 import de.melanx.boohoo.registration.ModSounds;
@@ -144,7 +145,7 @@ public class Ghost extends Monster {
                     itemEntity.remove(RemovalReason.DISCARDED);
                 }
                 this.setItemInHand(InteractionHand.MAIN_HAND, steal);
-                this.vanishCounter = 100;
+                this.vanishCounter = ModConfig.vanishCounter;
                 player.getCapability(GhostCapability.INSTANCE).ifPresent(IGhostStatus::invalidate);
             }
         }
