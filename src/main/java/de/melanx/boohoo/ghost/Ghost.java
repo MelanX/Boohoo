@@ -134,16 +134,19 @@ public class Ghost extends Monster {
 
             // player dead -> take one item, fly away and activate vanish counter
             if (!player.isAlive()) {
-                AABB bb = player.getBoundingBox().deflate(3, 3, 3);
-                List<ItemEntity> itemEntities = this.level.getEntitiesOfClass(ItemEntity.class, bb);
-                Optional<ItemEntity> item = itemEntities.stream().findAny();
-                ItemStack steal = ItemStack.EMPTY;
-                if (item.isPresent()) {
-                    ItemEntity itemEntity = item.get();
-                    steal = itemEntity.getItem();
-                    itemEntity.remove(RemovalReason.DISCARDED);
+                if (ModConfig.stealItems) {
+                    AABB bb = player.getBoundingBox().deflate(3, 3, 3);
+                    List<ItemEntity> itemEntities = this.level.getEntitiesOfClass(ItemEntity.class, bb);
+                    Optional<ItemEntity> item = itemEntities.stream().findAny();
+                    ItemStack steal = ItemStack.EMPTY;
+                    if (item.isPresent()) {
+                        ItemEntity itemEntity = item.get();
+                        steal = itemEntity.getItem();
+                        itemEntity.remove(RemovalReason.DISCARDED);
+                    }
+                    this.setItemInHand(InteractionHand.MAIN_HAND, steal);
                 }
-                this.setItemInHand(InteractionHand.MAIN_HAND, steal);
+
                 this.vanishCounter = ModConfig.vanishCounter;
                 player.getCapability(GhostCapability.INSTANCE).ifPresent(IGhostStatus::invalidate);
             }

@@ -16,4 +16,7 @@ public class ModConfig {
 
     @Config("Should the ghost disappear when turning into day?")
     public static boolean disappearAtDay = true;
+
+    @Config("Should the ghost steal one item stack once the player is dead?")
+    public static boolean stealItems = true;
 }
