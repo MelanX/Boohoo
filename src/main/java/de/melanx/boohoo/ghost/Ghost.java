@@ -5,6 +5,7 @@ import de.melanx.boohoo.capability.IGhostStatus;
 import de.melanx.boohoo.registration.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -20,7 +21,6 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -36,10 +36,12 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Ghost extends Monster {
 
     private int vanishCounter = Integer.MAX_VALUE;
+    private UUID targetId = null;
 
     public Ghost(EntityType<? extends Monster> type, Level level) {
         super(type, level);
@@ -50,7 +52,7 @@ public class Ghost extends Monster {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.FOLLOW_RANGE, 32.0)
-                .add(Attributes.ATTACK_DAMAGE, 5.0)
+                .add(Attributes.ATTACK_DAMAGE, 6.0)
                 .build();
     }
 
@@ -77,6 +79,7 @@ public class Ghost extends Monster {
         this.noPhysics = false;
         this.setNoGravity(true);
 
+        // drop inventory and remove ghost from world
         if (this.vanishCounter <= 0) {
             this.getAllSlots().forEach(stack -> {
                 if (!stack.isEmpty()) {
@@ -86,6 +89,7 @@ public class Ghost extends Monster {
             this.remove(RemovalReason.DISCARDED);
         }
 
+        // count downwards
         if (this.vanishCounter != Integer.MAX_VALUE) {
             this.vanishCounter--;
         }
@@ -97,28 +101,45 @@ public class Ghost extends Monster {
         this.goalSelector.addGoal(4, new MoveTowardsTargetGoal(this, 0.9D, 32.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new Ghost.GhostRandomMoveGoal());
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false));
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.getTarget() instanceof Player player) {
-            if (this.isLookingAtMe(player)) {
-                boolean teleported = false;
-                int counter = 0;
-                while (!teleported && counter++ < 100) {
-                    teleported = this.teleportTowards(player);
-                }
 
+        if (!this.level.isClientSide) {
+            if (this.targetId == null && this.getTarget() != null) {
+                this.targetId = this.getTarget().getUUID();
+            } else if (this.targetId != null && this.getTarget() == null) {
+                Entity entity = ((ServerLevel) this.level).getEntity(this.targetId);
+                if (entity instanceof Player player) {
+                    this.setTarget(player);
+                }
             }
+        }
+
+        if (this.getTarget() instanceof Player player) {
+            // teleport to player when player changed dimension
+            if (!this.level.isClientSide) {
+                if (this.getTarget().level != this.level) {
+                    this.changeDimension((ServerLevel) this.getTarget().level);
+                    this.teleportTowards(this.getTarget());
+                }
+            }
+
+            // teleport random to player
+            if (this.isLookingAtMe(player)) {
+                this.teleportTowards(player);
+            }
+
+            // player dead -> take one item, fly away and activate vanish counter
             if (!player.isAlive()) {
                 AABB bb = player.getBoundingBox().deflate(3, 3, 3);
-                List<ItemEntity> entitiesOfClass = this.level.getEntitiesOfClass(ItemEntity.class, bb);
-                Optional<ItemEntity> stack1 = entitiesOfClass.stream().findAny();
+                List<ItemEntity> itemEntities = this.level.getEntitiesOfClass(ItemEntity.class, bb);
+                Optional<ItemEntity> item = itemEntities.stream().findAny();
                 ItemStack steal = ItemStack.EMPTY;
-                if (stack1.isPresent()) {
-                    ItemEntity itemEntity = stack1.get();
+                if (item.isPresent()) {
+                    ItemEntity itemEntity = item.get();
                     steal = itemEntity.getItem();
                     itemEntity.remove(RemovalReason.DISCARDED);
                 }
@@ -135,6 +156,10 @@ public class Ghost extends Monster {
         if (tag.get("VanishCounter") != null) {
             this.vanishCounter = tag.getInt("VanishCounter");
         }
+
+        if (tag.get("TargetId") != null) {
+            this.targetId = tag.getUUID("TargetId");
+        }
     }
 
     @Override
@@ -143,8 +168,14 @@ public class Ghost extends Monster {
         if (this.vanishCounter != Integer.MAX_VALUE) {
             tag.putInt("VanishCounter", this.vanishCounter);
         }
+
+        if (this.targetId != null) {
+            tag.putUUID("TargetId", this.targetId);
+        }
     }
 
+    // [Vanilla copy]
+    // checks if the player is looking at the ghost
     protected boolean isLookingAtMe(Player player) {
         ItemStack helmet = player.getInventory().getArmor(3);
         if (helmet.isEnderMask(player, null)) {
@@ -264,6 +295,8 @@ public class Ghost extends Monster {
             }
         }
 
+        // [Vanilla copy]
+        // Vanilla check if the ghost is in a wall, ignores noPhysics
         public boolean isInWall(Ghost ghost) {
             float width = ghost.getDimensions(ghost.getPose()).width * 0.8F;
             AABB aabb = AABB.ofSize(ghost.getEyePosition(), width, 1, width);
@@ -273,6 +306,7 @@ public class Ghost extends Monster {
     }
 
     class GhostRandomMoveGoal extends Goal {
+
         public GhostRandomMoveGoal() {
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
@@ -298,7 +332,6 @@ public class Ghost extends Monster {
                     break;
                 }
             }
-
         }
     }
 }

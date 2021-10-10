@@ -17,7 +17,7 @@ Adds a spooky ghost woohoo
 [[dependencies.boohoo]]
     modId="forge"
     mandatory=true
-    versionRange="[37.0.74,)"
+    versionRange="[37.0.78,)"
     ordering="NONE"
     side="BOTH"
 
