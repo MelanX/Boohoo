@@ -35,9 +35,9 @@ public class SoundDefinitionProvider extends SoundDefinitionsProvider {
                 ).subtitle("subtitle.boohoo.ghost.teleport"));
         this.add(ModSounds.ghostDeath,
                 definition().with(
-                        sound(Boohoo.getInstance().resource("ghost/death0")),
-                        sound(Boohoo.getInstance().resource("ghost/death1")),
-                        sound(Boohoo.getInstance().resource("ghost/death2"))
+                        sound(Boohoo.getInstance().resource("ghost/death0")).volume(1.7),
+                        sound(Boohoo.getInstance().resource("ghost/death1")).volume(1.7),
+                        sound(Boohoo.getInstance().resource("ghost/death2")).volume(0.9)
                 ).subtitle("subtitle.boohoo.ghost.death"));
     }
 }

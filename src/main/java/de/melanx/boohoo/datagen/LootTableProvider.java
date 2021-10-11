@@ -24,7 +24,7 @@ public class LootTableProvider extends EntityLootProviderBase {
     protected void setup() {
         this.customLootTable(ModEntities.ghost, LootTable.lootTable()
                 .withPool(LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(2))
+                        .setRolls(ConstantValue.exactly(1))
                         .bonusRolls(1, 2)
                         .add(LootItem.lootTableItem(Items.BOOK)
                                 .apply(EnchantRandomlyFunction.randomApplicableEnchantment())
