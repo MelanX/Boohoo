@@ -45,6 +45,7 @@ public class Ghost extends Monster {
     public Ghost(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.moveControl = new GhostMoveControl(this);
+        this.xpReward = 7;
     }
 
     public static AttributeSupplier defaultAttributes() {
@@ -52,7 +53,7 @@ public class Ghost extends Monster {
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.FOLLOW_RANGE, 32.0)
                 .add(Attributes.ATTACK_DAMAGE, 6.0)
-                .add(Attributes.MAX_HEALTH, 40.0)
+                .add(Attributes.MAX_HEALTH, 30.0)
                 .build();
     }
 
@@ -273,6 +274,11 @@ public class Ghost extends Monster {
     @Override
     public int getAmbientSoundInterval() {
         return 160;
+    }
+
+    @Override
+    protected int getExperienceReward(@Nonnull Player player) {
+        return this.xpReward *= Math.abs(player.getHealth() - player.getMaxHealth());
     }
 
     private class GhostMoveControl extends MoveControl {
