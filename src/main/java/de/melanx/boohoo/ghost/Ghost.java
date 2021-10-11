@@ -1,8 +1,6 @@
 package de.melanx.boohoo.ghost;
 
 import de.melanx.boohoo.ModConfig;
-import de.melanx.boohoo.capability.GhostCapability;
-import de.melanx.boohoo.capability.IGhostStatus;
 import de.melanx.boohoo.registration.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -149,7 +147,6 @@ public class Ghost extends Monster {
                 }
 
                 this.vanishCounter = ModConfig.vanishCounter;
-                player.getCapability(GhostCapability.INSTANCE).ifPresent(IGhostStatus::invalidate);
             }
         }
     }
@@ -239,6 +236,11 @@ public class Ghost extends Monster {
             }
         });
         this.remove(RemovalReason.DISCARDED);
+    }
+
+    @Nullable
+    public UUID getTargetId() {
+        return this.targetId;
     }
 
     @Override

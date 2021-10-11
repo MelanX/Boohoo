@@ -21,6 +21,9 @@ public class GhostCapability implements IGhostStatus, ICapabilityProvider, INBTS
     private UUID ghostId;
     private CompoundTag ghostData = new CompoundTag();
     private boolean isGhosted;
+    private double dealtDamage;
+    private double takenDamage;
+    private long lastDay;
 
     @Nullable
     @Override
@@ -62,6 +65,46 @@ public class GhostCapability implements IGhostStatus, ICapabilityProvider, INBTS
         this.isGhosted = ghosted;
     }
 
+    @Override
+    public double getDealtDamage() {
+        return this.dealtDamage;
+    }
+
+    @Override
+    public void addDealtDamage(double damage) {
+        this.dealtDamage += damage;
+    }
+
+    @Override
+    public void setDealtDamage(double damage) {
+        this.dealtDamage = damage;
+    }
+
+    @Override
+    public double getTakenDamage() {
+        return this.takenDamage;
+    }
+
+    @Override
+    public void addTakenDamage(double damage) {
+        this.takenDamage += damage;
+    }
+
+    @Override
+    public void setTakenDamage(double damage) {
+        this.takenDamage = damage;
+    }
+
+    @Override
+    public long getLastDay() {
+        return this.lastDay;
+    }
+
+    @Override
+    public void setLastDay(long day) {
+        this.lastDay = day;
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -81,6 +124,9 @@ public class GhostCapability implements IGhostStatus, ICapabilityProvider, INBTS
 
         tag.put("GhostData", this.ghostData);
         tag.putBoolean("IsGhosted", this.isGhosted);
+        tag.putDouble("DealtDamage", this.dealtDamage);
+        tag.putDouble("TakenDamage", this.takenDamage);
+        tag.putLong("LastDay", this.lastDay);
         return tag;
     }
 
@@ -92,5 +138,8 @@ public class GhostCapability implements IGhostStatus, ICapabilityProvider, INBTS
 
         this.ghostData = tag.getCompound("GhostData");
         this.isGhosted = tag.getBoolean("IsGhosted");
+        this.dealtDamage = tag.getDouble("DealtDamage");
+        this.takenDamage = tag.getDouble("TakenDamage");
+        this.lastDay = tag.getLong("LastDay");
     }
 }

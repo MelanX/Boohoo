@@ -2,6 +2,7 @@ package de.melanx.boohoo;
 
 import io.github.noeppi_noeppi.libx.annotation.config.RegisterConfig;
 import io.github.noeppi_noeppi.libx.config.Config;
+import io.github.noeppi_noeppi.libx.config.validator.DoubleRange;
 import io.github.noeppi_noeppi.libx.config.validator.IntRange;
 
 @RegisterConfig
@@ -19,4 +20,10 @@ public class ModConfig {
 
     @Config("Should the ghost steal one item stack once the player is dead?")
     public static boolean stealItems = true;
+
+    @Config({"Ghost multiplier when the players ghost takes or deals damage.",
+            "Increases the amount when taking damage.",
+            "Decreases the amount when dealing damage."})
+    @DoubleRange(max = 10)
+    public static double ghostMultiplier = 1;
 }
