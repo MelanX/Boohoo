@@ -80,7 +80,7 @@ public class Ghost extends Monster {
         this.noPhysics = false;
         this.setNoGravity(true);
 
-        if (ModConfig.disappearAtDay && this.level.isDay() && this.vanishCounter != Integer.MAX_VALUE) {
+        if (ModConfig.disappearAtDay && this.vanishCounter > ModConfig.vanishCounter && this.level.isDay()) {
             this.vanishCounter = ModConfig.vanishCounter;
         }
 
@@ -167,9 +167,7 @@ public class Ghost extends Monster {
     @Override
     public void addAdditionalSaveData(@Nonnull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        if (this.vanishCounter != Integer.MAX_VALUE) {
-            tag.putInt("VanishCounter", this.vanishCounter);
-        }
+        tag.putInt("VanishCounter", this.vanishCounter);
 
         if (this.targetId != null) {
             tag.putUUID("TargetId", this.targetId);
