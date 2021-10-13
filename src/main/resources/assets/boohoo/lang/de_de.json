@@ -1,0 +1,8 @@
+{
+  "item.boohoo.ghost_spawn_egg": "Geist-Spawn-Ei",
+  "entity.boohoo.ghost": "Geist",
+  "subtitle.boohoo.ghost.hurt": "Geist nimmt Schaden",
+  "subtitle.boohoo.ghost.ambient": "Geist lacht",
+  "subtitle.boohoo.ghost.teleport": "Geist teleportiert sich",
+  "subtitle.boohoo.ghost.death": "Geist stirbt"
+}
