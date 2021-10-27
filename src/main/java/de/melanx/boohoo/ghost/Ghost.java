@@ -81,18 +81,20 @@ public class Ghost extends Monster {
         this.noPhysics = false;
         this.setNoGravity(true);
 
-        if (ModConfig.disappearAtDay && this.vanishCounter > ModConfig.vanishCounter && this.level.isDay()) {
-            this.vanishCounter = ModConfig.vanishCounter;
-        }
+        if (!this.level.isClientSide) {
+            if (ModConfig.disappearAtDay && this.vanishCounter > ModConfig.vanishCounter && this.level.isDay()) {
+                this.vanishCounter = ModConfig.vanishCounter;
+            }
 
-        // drop inventory and remove ghost from world
-        if (this.vanishCounter <= 0) {
-            this.disappear();
-        }
+            // drop inventory and remove ghost from world
+            if (this.vanishCounter <= 0) {
+                this.disappear();
+            }
 
-        // count downwards
-        if (this.vanishCounter != Integer.MAX_VALUE) {
-            this.vanishCounter--;
+            // count downwards
+            if (this.vanishCounter != Integer.MAX_VALUE) {
+                this.vanishCounter--;
+            }
         }
     }
 
@@ -117,38 +119,36 @@ public class Ghost extends Monster {
                     this.setTarget(player);
                 }
             }
-        }
 
-        if (this.getTarget() instanceof Player player) {
-            // teleport to player when player changed dimension
-            if (!this.level.isClientSide) {
+            if (this.getTarget() instanceof Player player) {
                 if (this.getTarget().level != this.level) {
                     this.changeDimension((ServerLevel) this.getTarget().level);
                     this.teleportTowards(this.getTarget());
                 }
-            }
 
-            // teleport random to player
-            if (this.isLookingAtMe(player)) {
-                this.teleportTowards(player);
-            }
-
-            // player dead -> take one item, fly away and activate vanish counter
-            if (!player.isAlive()) {
-                if (ModConfig.stealItems && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
-                    AABB bb = player.getBoundingBox().deflate(3, 3, 3);
-                    List<ItemEntity> itemEntities = this.level.getEntitiesOfClass(ItemEntity.class, bb);
-                    Optional<ItemEntity> item = itemEntities.stream().findAny();
-                    ItemStack steal = ItemStack.EMPTY;
-                    if (item.isPresent()) {
-                        ItemEntity itemEntity = item.get();
-                        steal = itemEntity.getItem();
-                        itemEntity.remove(RemovalReason.DISCARDED);
-                    }
-                    this.setItemInHand(InteractionHand.MAIN_HAND, steal);
+                if (this.isLookingAtMe(player)) {
+                    this.teleportTowards(player);
                 }
 
-                this.vanishCounter = ModConfig.vanishCounter;
+                // player dead -> take one item, fly away and activate vanish counter
+                if (!player.isAlive()) {
+                    if (ModConfig.stealItems && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+                        AABB bb = player.getBoundingBox().deflate(3, 3, 3);
+                        List<ItemEntity> itemEntities = this.level.getEntitiesOfClass(ItemEntity.class, bb);
+                        Optional<ItemEntity> item = itemEntities.stream().findAny();
+                        ItemStack steal = ItemStack.EMPTY;
+                        if (item.isPresent()) {
+                            ItemEntity itemEntity = item.get();
+                            steal = itemEntity.getItem();
+                            itemEntity.remove(RemovalReason.DISCARDED);
+                        }
+                        this.setItemInHand(InteractionHand.MAIN_HAND, steal);
+                    }
+
+                    if (this.vanishCounter == Integer.MAX_VALUE) {
+                        this.vanishCounter = ModConfig.vanishCounter;
+                    }
+                }
             }
         }
     }
