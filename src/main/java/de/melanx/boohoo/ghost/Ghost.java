@@ -87,7 +87,7 @@ public class Ghost extends Monster {
 
         // drop inventory and remove ghost from world
         if (this.vanishCounter <= 0) {
-            this.kill();
+            this.disappear();
         }
 
         // count downwards
@@ -227,6 +227,12 @@ public class Ghost extends Monster {
         }
 
         return teleported;
+    }
+
+    @Override
+    public void kill() {
+        this.disappear();
+        super.kill();
     }
 
     private void disappear() {
