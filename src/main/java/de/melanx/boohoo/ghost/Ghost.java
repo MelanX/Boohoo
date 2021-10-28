@@ -122,6 +122,7 @@ public class Ghost extends Monster {
 
             if (this.getTarget() instanceof Player player) {
                 if (this.getTarget().level != this.level) {
+                    this.handleInsidePortal(this.blockPosition());
                     this.changeDimension((ServerLevel) this.getTarget().level);
                     this.teleportTowards(this.getTarget());
                 }
