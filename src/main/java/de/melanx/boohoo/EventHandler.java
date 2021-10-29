@@ -80,7 +80,7 @@ public class EventHandler {
                             return;
                         }
 
-                        AttributeModifier modifier = new AttributeModifier(GHOST_MAX_HEALTH_ID, "Player based health boost", Math.max(0, cap.getDealtDamage() - cap.getTakenDamage()), AttributeModifier.Operation.ADDITION);
+                        AttributeModifier modifier = new AttributeModifier(GHOST_MAX_HEALTH_ID, "Player based health boost", Math.max(0, (cap.getDealtDamage() - cap.getTakenDamage()) * ModConfig.healthMultiplier), AttributeModifier.Operation.ADDITION);
 
                         ghost.setTarget(player);
                         ghost.setPos(player.getPosition(1).add(level.random.nextInt(3) - 1.5, level.random.nextInt(3), level.random.nextInt(3) - 1.5));

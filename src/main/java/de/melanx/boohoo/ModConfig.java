@@ -11,6 +11,9 @@ public class ModConfig {
     @Config("The chance per second to spawn a ghost at night nearby a player")
     public static double spawnChance = 0.001;
 
+    @Config("The multiplier for calculating the additional health for a ghost")
+    public static int healthMultiplier = 1;
+
     @Config("Duration in ticks the ghost will stay in the world after the player died.")
     @IntRange(max = Integer.MAX_VALUE - 1)
     public static int vanishCounter = 1200;
