@@ -19,14 +19,14 @@ public class SoundDefinitionProvider extends SoundDefinitionsProvider {
     public void registerSounds() {
         this.add(ModSounds.ghostHurt,
                 definition().with(
-                        sound(Boohoo.getInstance().resource("ghost/hurt0")).volume(1.3).pitch(0.3),
-                        sound(Boohoo.getInstance().resource("ghost/hurt1")).pitch(0.8),
-                        sound(Boohoo.getInstance().resource("ghost/hurt2")).pitch(0.8)
+                        sound(Boohoo.getInstance().resource("ghost/hurt0")).volume(1.1).pitch(0.3),
+                        sound(Boohoo.getInstance().resource("ghost/hurt1")).pitch(0.6),
+                        sound(Boohoo.getInstance().resource("ghost/hurt2")).pitch(0.6)
                 ).subtitle("subtitle.boohoo.ghost.hurt"));
         this.add(ModSounds.ghostAmbient,
                 definition().with(
-                        sound(Boohoo.getInstance().resource("ghost/ambient0")).volume(0.3).pitch(0.8),
-                        sound(Boohoo.getInstance().resource("ghost/ambient1")).volume(0.3)
+                        sound(Boohoo.getInstance().resource("ghost/ambient0")).volume(0.1).pitch(0.8),
+                        sound(Boohoo.getInstance().resource("ghost/ambient1")).volume(0.1)
                 ).subtitle("subtitle.boohoo.ghost.ambient"));
         this.add(ModSounds.ghostTeleport,
                 definition().with(
@@ -35,9 +35,9 @@ public class SoundDefinitionProvider extends SoundDefinitionsProvider {
                 ).subtitle("subtitle.boohoo.ghost.teleport"));
         this.add(ModSounds.ghostDeath,
                 definition().with(
-                        sound(Boohoo.getInstance().resource("ghost/death0")).volume(1.7),
-                        sound(Boohoo.getInstance().resource("ghost/death1")).volume(1.7),
-                        sound(Boohoo.getInstance().resource("ghost/death2")).volume(0.9)
+                        sound(Boohoo.getInstance().resource("ghost/death0")).volume(1.5),
+                        sound(Boohoo.getInstance().resource("ghost/death1")).volume(1.5),
+                        sound(Boohoo.getInstance().resource("ghost/death2")).volume(0.7)
                 ).subtitle("subtitle.boohoo.ghost.death"));
     }
 }
