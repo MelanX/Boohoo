@@ -9,7 +9,7 @@ import io.github.noeppi_noeppi.libx.config.validator.IntRange;
 public class ModConfig {
 
     @Config("The chance per second to spawn a ghost at night nearby a player")
-    public static double spawnChance = 0.01;
+    public static double spawnChance = 0.001;
 
     @Config("Duration in ticks the ghost will stay in the world after the player died.")
     @IntRange(max = Integer.MAX_VALUE - 1)
