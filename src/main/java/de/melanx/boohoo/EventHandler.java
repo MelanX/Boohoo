@@ -72,6 +72,7 @@ public class EventHandler {
             level.players().forEach(player -> {
                 player.getCapability(GhostCapability.INSTANCE).ifPresent(cap -> {
                     if (overworld.isNight()
+                            && ModConfig.forbiddenDimensions.test(player.level.dimension().location())
                             && player.gameMode.getGameModeForPlayer() == GameType.SURVIVAL
                             && !cap.isGhosted()
                             && player.getRandom().nextDouble() < ModConfig.spawnChance) {

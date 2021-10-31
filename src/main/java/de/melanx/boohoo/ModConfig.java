@@ -4,6 +4,8 @@ import io.github.noeppi_noeppi.libx.annotation.config.RegisterConfig;
 import io.github.noeppi_noeppi.libx.config.Config;
 import io.github.noeppi_noeppi.libx.config.validator.DoubleRange;
 import io.github.noeppi_noeppi.libx.config.validator.IntRange;
+import io.github.noeppi_noeppi.libx.util.ResourceList;
+import net.minecraft.resources.ResourceLocation;
 
 @RegisterConfig
 public class ModConfig {
@@ -29,4 +31,9 @@ public class ModConfig {
             "Decreases the amount when dealing damage."})
     @DoubleRange(max = 10)
     public static double ghostMultiplier = 1;
+
+    @Config("A list of dimensions where no ghost should spawn")
+    public static ResourceList forbiddenDimensions = new ResourceList(false, b -> {
+        b.simple(new ResourceLocation("bingolobby", "lobby"));
+    });
 }
